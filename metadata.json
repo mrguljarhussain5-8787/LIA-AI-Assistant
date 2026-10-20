@@ -1,0 +1,6 @@
+{
+  "name": "LIA AI",
+  "description": "Your AI Companion. Your Personal Assistant with realistic voice, GF mode personality, and intelligent device tools.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
