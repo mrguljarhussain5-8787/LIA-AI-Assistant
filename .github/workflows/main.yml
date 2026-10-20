@@ -26,23 +26,16 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
-
-      - name: Accept Android SDK licenses
-        run: yes | sdkmanager --licenses
-
-      - name: Install Android SDK packages
-        run: |
-          sdkmanager --install \
-            "platform-tools" \
-            "platforms;android-35" \
-            "build-tools;35.0.0"
+        with:
+          accept-android-sdk-licenses: true
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
 
       - name: Verify Android project
         run: |
-          echo "Checking project files..."
+          echo "Checking Android project..."
           ls -la
           if [ ! -f "gradlew" ]; then
-            echo "ERROR: gradlew not found in repository root."
+            echo "ERROR: gradlew not found."
             exit 1
           fi
           if [ ! -f "settings.gradle" ] && \
@@ -51,7 +44,7 @@ jobs:
             exit 1
           fi
           if [ ! -d "app" ]; then
-            echo "ERROR: Android app folder not found."
+            echo "ERROR: app folder not found."
             exit 1
           fi
           chmod +x gradlew
@@ -63,7 +56,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: LIA-AI-Assistant-APK
-          path: "**/build/outputs/apk/debug/*.apk"
+          path: '**/build/outputs/apk/debug/*.apk'
           if-no-files-found: error
           retention-days: 7
           
