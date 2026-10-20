@@ -15,27 +15,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout LIA AI Assistant
+      - name: Checkout source code
         uses: actions/checkout@v4
 
-      
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Configure Android SDK
+      - name: Set up Android SDK
         uses: android-actions/setup-android@v3
-        
 
       - name: Accept Android SDK licenses
-        run: |
-          yes | sdkmanager --sdk_root="${ANDROID_HOME}" --licenses || true
+        run: yes | sdkmanager --licenses
 
       - name: Install Android SDK packages
         run: |
-          sdkmanager --sdk_root="${ANDROID_HOME}" --install \
+          sdkmanager --install \
             "platform-tools" \
             "platforms;android-35" \
             "build-tools;35.0.0"
@@ -44,20 +41,29 @@ jobs:
         run: |
           echo "Checking project files..."
           ls -la
-          if [ ! -f gradlew ]; then
-            echo "ERROR: gradlew is missing from the repository root."
+          if [ ! -f "gradlew" ]; then
+            echo "ERROR: gradlew not found in repository root."
+            exit 1
+          fi
+          if [ ! -f "settings.gradle" ] && \
+             [ ! -f "settings.gradle.kts" ]; then
+            echo "ERROR: Gradle settings file not found."
+            exit 1
+          fi
+          if [ ! -d "app" ]; then
+            echo "ERROR: Android app folder not found."
             exit 1
           fi
           chmod +x gradlew
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug --stacktrace
+        run: ./gradlew --no-daemon assembleDebug
 
-      - name: Upload LIA AI Assistant APK
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: LIA-AI-Assistant-APK
-          path: app/build/outputs/apk/debug/*.apk
+          path: "**/build/outputs/apk/debug/*.apk"
           if-no-files-found: error
           retention-days: 7
           
