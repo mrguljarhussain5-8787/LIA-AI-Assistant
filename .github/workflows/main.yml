@@ -1,3 +1,4 @@
+
 name: Build LIA AI Assistant APK
 
 on:
@@ -21,23 +22,15 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      
       - name: Accept Android SDK licenses
         run: yes | sdkmanager --licenses
 
       - name: Install Android SDK packages
         run: |
           sdkmanager --install "platform-tools" "platforms;android-35" "build-tools;35.0.0"
-          
-      
-      
-          
-          
-      
 
       - name: Verify Android project
         run: |
@@ -47,22 +40,16 @@ jobs:
             echo "ERROR: gradlew not found in repository root."
             exit 1
           fi
-          if [ ! -f settings.gradle.kts ] && [ ! -f settings.gradle ]; then
-            echo "ERROR: Gradle settings file not found."
-            exit 1
-          fi
+          chmod +x gradlew
 
       - name: Build Debug APK
-        run: |
-          chmod +x gradlew
-          ./gradlew assembleDebug
+        run: ./gradlew assembleDebug --stacktrace
 
       - name: Upload LIA AI Assistant APK
         uses: actions/upload-artifact@v4
         with:
           name: LIA-AI-Assistant-APK
-          path: |
-            **/build/outputs/apk/debug/*.apk
+          path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 7
           
